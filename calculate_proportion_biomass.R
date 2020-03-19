@@ -26,21 +26,30 @@
 #' want to measure variation
 
 ## TO DO: Add a warning message if there is no biomass in the input data
-## TO DO: Work out how to calculate uncertainty/variability/confidence intervals
 
-calculate_proportion_biomass <- function(data, years) {
+
+calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
+                                         replicate_number,years) {
+  
+  
+  if( !dir.exists( file.path(output_folder) ) ) {
+    dir.create( file.path(output_folder), recursive = TRUE )
+    
+  }
+  
+  scenario <- basename(output_folder)
   
   # Calculate the sum of biomass in the specified group
   
-  if (class(data) == "data.frame") {
+  if (class(inputs) == "data.frame") {
     
     #dataframe <- dataframe[sapply(dataframe, function(x) is.numeric(x))]
     
-    matrix <- data[,sapply(data,is.numeric)]
+    matrix <- inputs[,sapply(inputs,is.numeric)]
     
   } else {
     
-    matrix <- data
+    matrix <- inputs
   }
   
   total_biomass <- colSums(matrix, na.rm = TRUE)
@@ -60,8 +69,12 @@ calculate_proportion_biomass <- function(data, years) {
   proportion_biomass <- as.data.frame(post_exploitation_biomass/pre_exploitation_biomass)
   
   proportion_biomass <- proportion_biomass %>%
-    mutate(year = seq(years+1, ncol(data), 1)) %>%
+    mutate(year = seq(years+1, ncol(inputs), 1)) %>%
     setNames(c("relative_proportion_of_biomass", "year"))
+  
+  saveRDS( proportion_biomass, file = file.path(output_folder,
+           paste(scenario, simulation_number, replicate_number, 
+                 "proportion_total_biomass_outputs", sep = "_" ))) 
   
   return(proportion_biomass)
   
@@ -75,6 +88,8 @@ calculate_proportion_biomass <- function(data, years) {
 # pre_exploitation_period <- 2
 # startimpact <- 3
 # endimpact <- 5
+
+#' TODO: Add an argument to specify line colour?
 
 plot_total_proportion_biomass <- function(data, pre_exploitation_period, 
                                           startimpact, endimpact){
