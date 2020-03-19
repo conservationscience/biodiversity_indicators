@@ -91,24 +91,36 @@ calculate_proportion_biomass <- function(inputs, output_folder, simulation_numbe
 
 #' TODO: Add an argument to specify line colour?
 
-plot_total_proportion_biomass <- function(data, pre_exploitation_period, 
-                                          startimpact, endimpact){
-  
- xmaximum <- as.numeric(max(data$year, na.rm = TRUE))
+plot_total_proportion_biomass <- function(inputs, output_folder, scenario, 
+                                          pre_exploitation_period, 
+                                          startimpact, endimpact) {
 
- yminimum <- min(data$lower_bound) - 
-             min(data$lower_bound) * 0.05
+  if( !dir.exists( file.path(output_folder) ) ) {
  
- ymaximum <- max(data$upper_bound) + 
-             max(data$upper_bound) * 0.05
+     dir.create( file.path(output_folder), recursive = TRUE )
+  
+}
+
+ scenario_title <- sub("_", " ", scenario)
+  
+ xmaximum <- as.numeric(max(inputs$year, na.rm = TRUE))
+
+ yminimum <- min(inputs$lower_bound) - 
+             min(inputs$lower_bound) * 0.05
  
- if ("lower_bound" %in% names(data)) {
+ ymaximum <- max(inputs$upper_bound) + 
+             max(inputs$upper_bound) * 0.05
+ 
+ if ("lower_bound" %in% names(inputs)) {
    
- plot <- ggplot(data = data, aes(x = data$year, y = data$mean_relative_proportion_of_biomass)) +
+plotName <- paste(scenario_title, " relative proportion of total biomass",".tiff",sep="")
+tiff(file = (paste(output_folder,plotName, sep = "/")), units ="in", width=10, height=5, res=200)
+   
+ plot <- ggplot(data = inputs, aes(x = inputs$year, y = inputs$mean_relative_proportion_of_biomass)) +
                                 geom_path() +
                                 labs(x = "Time (years)", 
                                      y = "Relative proportion of total biomass") +
-                                geom_ribbon(aes(ymin=data$lower_bound, ymax=data$upper_bound), 
+                                geom_ribbon(aes(ymin=inputs$lower_bound, ymax=inputs$upper_bound), 
                                             alpha=0.2) +
                                 ylim(yminimum,ymaximum) +
                                 xlim(pre_exploitation_period,xmaximum) +
@@ -120,11 +132,15 @@ plot_total_proportion_biomass <- function(data, pre_exploitation_period,
                                 axis.line = element_line(colour = "black")) +
                                 geom_hline(yintercept = 1, colour = "black") +
                                 geom_vline(xintercept = startimpact, colour = "red") +
-                                geom_vline(xintercept = endimpact, colour = "blue")
+                                geom_vline(xintercept = endimpact, colour = "blue") +
+          ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", sep = " "))
  
  } else {
+
+plotName <- paste(scenario_title, "relative_proportion_of_total_biomass",".tiff",sep="")
+tiff(file = (paste(output_folder,plotName, sep = "/")), units ="in", width=10, height=5, res=200)
    
-plot <- ggplot(data = data, aes(x = data$year, y = data$mean_relative_proportion_of_biomass)) +
+plot <- ggplot(data = inputs, aes(x = inputs$year, y = inputs$mean_relative_proportion_of_biomass)) +
                geom_path() +
                labs(x = "Time (years)", 
                     y = "Relative proportion of total biomass") +
@@ -138,13 +154,14 @@ plot <- ggplot(data = data, aes(x = data$year, y = data$mean_relative_proportion
                      axis.line = element_line(colour = "black")) +
                geom_hline(yintercept = 1, colour = "black") +
                geom_vline(xintercept = startimpact, colour = "red") +
-               geom_vline(xintercept = endimpact, colour = "blue")
-   
-   
+               geom_vline(xintercept = endimpact, colour = "blue") +
+  ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", sep = " "))
+
+
  }
   
 return(plot)
-  
+ 
 }
 
 # Test function
