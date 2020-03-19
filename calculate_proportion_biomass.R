@@ -19,15 +19,14 @@
 #' Return a dataframe with two variables: the proportion of biomass relative
 #' to a pre-exploitation reference point, and the annual timestep
 
-#' @param dataframe a converted time matrix with x rows (functional groups/bodymass) 
-#' and y cols (annual timesteps) of whatever group you want to calculate proportion
-#' biomass (eg all groups, herbivores, mammals etc)
+#' @param data a converted time matrix with x rows (timesteps) 
+#' and y cols (timestep, relative proportion of biomass) of whatever group you
+#' want to calculate proportion of biomass (eg all groups, herbivores, mammals etc)
 #' @param years the number of yearly, pre-exploitation timesteps over which you 
 #' want to measure variation
 
 ## TO DO: Add a warning message if there is no biomass in the input data
 ## TO DO: Work out how to calculate uncertainty/variability/confidence intervals
-
 
 calculate_proportion_biomass <- function(data, years) {
   
@@ -69,16 +68,33 @@ calculate_proportion_biomass <- function(data, years) {
 }
 
 
-plot_total_proportion_biomass <- function(data, yminimum, ymaximum, 
-                                          pre_exploitation_period, 
+# data <- test_input # Data that plotting function originally worked on
+# 
+# data <- scenario_proportion_of_biomass_final[[1]]
+# 
+# pre_exploitation_period <- 2
+# startimpact <- 3
+# endimpact <- 5
+
+plot_total_proportion_biomass <- function(data, pre_exploitation_period, 
                                           startimpact, endimpact){
   
  xmaximum <- as.numeric(max(data$year, na.rm = TRUE))
-  
- plot <- ggplot(data = data, aes(x = data$year, y = data$relative_proportion_of_biomass)) +
+
+ yminimum <- min(data$lower_bound) - 
+             min(data$lower_bound) * 0.05
+ 
+ ymaximum <- max(data$upper_bound) + 
+             max(data$upper_bound) * 0.05
+ 
+ if ("lower_bound" %in% names(data)) {
+   
+ plot <- ggplot(data = data, aes(x = data$year, y = data$mean_relative_proportion_of_biomass)) +
                                 geom_path() +
                                 labs(x = "Time (years)", 
                                      y = "Relative proportion of total biomass") +
+                                geom_ribbon(aes(ymin=data$lower_bound, ymax=data$upper_bound), 
+                                            alpha=0.2) +
                                 ylim(yminimum,ymaximum) +
                                 xlim(pre_exploitation_period,xmaximum) +
                                 theme(panel.grid.major = element_blank(),
@@ -90,13 +106,36 @@ plot_total_proportion_biomass <- function(data, yminimum, ymaximum,
                                 geom_hline(yintercept = 1, colour = "black") +
                                 geom_vline(xintercept = startimpact, colour = "red") +
                                 geom_vline(xintercept = endimpact, colour = "blue")
+ 
+ } else {
+   
+plot <- ggplot(data = data, aes(x = data$year, y = data$mean_relative_proportion_of_biomass)) +
+               geom_path() +
+               labs(x = "Time (years)", 
+                    y = "Relative proportion of total biomass") +
+               ylim(yminimum,ymaximum) +
+               xlim(pre_exploitation_period,xmaximum) +
+               theme(panel.grid.major = element_blank(),
+                     axis.title = element_text(size = 18),
+                     axis.text = element_text(size = 18),
+                     panel.grid.minor = element_blank(),
+                     panel.background = element_rect(fill = "grey97"),
+                     axis.line = element_line(colour = "black")) +
+               geom_hline(yintercept = 1, colour = "black") +
+               geom_vline(xintercept = startimpact, colour = "red") +
+               geom_vline(xintercept = endimpact, colour = "blue")
+   
+   
+ }
   
- return(plot)
+return(plot)
   
 }
 
 # Test function
-#plot_total_proportion_biomass(proportion_total_biomass)
+
+# plot_total_proportion_biomass(data, pre_exploitation_period, 
+#                               startimpact, endimpact)
 
 
 
