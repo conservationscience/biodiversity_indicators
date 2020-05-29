@@ -27,6 +27,7 @@
 
 ## TO DO: Add a warning message if there is no biomass in the input data
 
+#inputs <- readRDS('Test_runs_ae_0_proportion_total_biomass_inputs')
 
 calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
                                          replicate_number,years) {
