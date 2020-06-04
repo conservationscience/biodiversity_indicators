@@ -19,13 +19,27 @@
 #' Return a dataframe with two variables: the proportion of biomass relative
 #' to a pre-exploitation reference point, and the annual timestep
 
-#' @param data a converted time matrix with x rows (timesteps) 
+#' @param inputs a converted time matrix with x rows (timesteps) 
 #' and y cols (timestep, relative proportion of biomass) of whatever group you
 #' want to calculate proportion of biomass (eg all groups, herbivores, mammals etc)
+#' 
+#' @param output_folder string, the file path of the directory where you want
+#' to store the calculated indicator value time series.  If the folder
+#' doesn't exist yet the function will create it.
+#' 
+#' @param simulation_number the simulation number the inputs came from (for
+#' labelling purposes)
+#' 
 #' @param years the number of yearly, pre-exploitation timesteps over which you 
-#' want to measure variation
+#' want to take the mean against which change in biomass will be measured
 
 ## TO DO: Add a warning message if there is no biomass in the input data
+
+# inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Test_runs\\Test_runs_ae_0_proportion_total_biomass_inputs")
+# output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
+# simulation_number <- "ae"
+# replicate_number <- "0"
+# years <- 1
 
 
 calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
@@ -69,8 +83,10 @@ calculate_proportion_biomass <- function(inputs, output_folder, simulation_numbe
   proportion_biomass <- as.data.frame(post_exploitation_biomass/pre_exploitation_biomass)
   
   proportion_biomass <- proportion_biomass %>%
-    mutate(year = seq(years+1, ncol(inputs), 1)) %>%
-    setNames(c("relative_proportion_of_biomass", "year"))
+    mutate(year = seq(years + 1, ncol(inputs), 1)) %>%
+    setNames(c("relative_proportion_of_biomass", "year")) %>%
+    arrange(year) %>%
+    slice(-n())
   
   saveRDS( proportion_biomass, file = file.path(output_folder,
            paste(scenario, simulation_number, replicate_number, 
