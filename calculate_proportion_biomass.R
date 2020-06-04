@@ -41,7 +41,6 @@
 # replicate_number <- "0"
 # years <- 1
 
-
 calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
                                          replicate_number,years) {
   
