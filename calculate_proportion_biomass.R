@@ -35,11 +35,17 @@
 
 ## TO DO: Add a warning message if there is no biomass in the input data
 
-# inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Test_runs\\Test_runs_ae_0_proportion_total_biomass_inputs")
-# output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
-# simulation_number <- "ae"
-# replicate_number <- "0"
-# years <- 1
+inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Test_runs\\Test_runs_ae_0_proportion_total_biomass_inputs")
+output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
+simulation_number <- "ae"
+replicate_number <- "0"
+years <- 1
+
+inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Harvesting_carnivores\\Harvesting_carnivores_201_0_proportion_total_biomass_inputs")
+output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
+simulation_number <- "201"
+replicate_number <- "0"
+years <- 10
 
 calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
                                          replicate_number,years) {
@@ -126,17 +132,20 @@ plot_total_proportion_biomass <- function(inputs, output_folder, scenario,
  ymaximum <- max(inputs$upper_bound) + 
              max(inputs$upper_bound) * 0.05
  
- if ("lower_bound" %in% names(inputs)) {
+if ("lower_bound" %in% names(inputs)) {
    
-plotName <- paste(scenario_title, " relative proportion of total biomass",".tiff",sep="")
-tiff(file = (paste(output_folder,plotName, sep = "/")), units ="in", width=10, height=5, res=200)
-   
- plot <- ggplot(data = inputs, aes(x = inputs$year, y = inputs$mean_relative_proportion_of_biomass)) +
+plotName <- paste(scenario_title, " relative proportion of total biomass",".png",sep="")
+
+plot <- ggplot(data = inputs, aes(x = inputs$year, 
+                                  y = inputs$mean_relative_proportion_of_biomass,
+                                  colour = scenario)) +
                                 geom_path() +
                                 labs(x = "Time (years)", 
                                      y = "Relative proportion of total biomass") +
-                                geom_ribbon(aes(ymin=inputs$lower_bound, ymax=inputs$upper_bound), 
-                                            alpha=0.2) +
+                                geom_ribbon(aes(ymin=inputs$lower_bound, 
+                                                ymax=inputs$upper_bound,
+                                                fill = scenario), 
+                                            colour = NA, alpha=0.2) +
                                 ylim(yminimum,ymaximum) +
                                 xlim(pre_exploitation_period,xmaximum) +
                                 theme(panel.grid.major = element_blank(),
@@ -148,13 +157,13 @@ tiff(file = (paste(output_folder,plotName, sep = "/")), units ="in", width=10, h
                                 geom_hline(yintercept = 1, colour = "black") +
                                 geom_vline(xintercept = startimpact, colour = "red") +
                                 geom_vline(xintercept = endimpact, colour = "blue") +
-          ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", sep = " "))
- 
+          ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", sep = " ")) +
+          theme(legend.position = "none") 
+
  } else {
 
-plotName <- paste(scenario_title, "relative_proportion_of_total_biomass",".tiff",sep="")
-tiff(file = (paste(output_folder,plotName, sep = "/")), units ="in", width=10, height=5, res=200)
-   
+plotName <- paste(scenario_title, "_relative_proportion_of_total_biomass",".png",sep="")
+
 plot <- ggplot(data = inputs, aes(x = inputs$year, y = inputs$mean_relative_proportion_of_biomass)) +
                geom_path() +
                labs(x = "Time (years)", 
@@ -170,13 +179,70 @@ plot <- ggplot(data = inputs, aes(x = inputs$year, y = inputs$mean_relative_prop
                geom_hline(yintercept = 1, colour = "black") +
                geom_vline(xintercept = startimpact, colour = "red") +
                geom_vline(xintercept = endimpact, colour = "blue") +
-  ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", sep = " "))
+        ggtitle(paste(scenario_title, "Relative Proportion of Total Biomass", 
+                      sep = " ")) +
+        theme(legend.position = "none") 
 
 
  }
-  
+
+ggsave(file.path(output_folder, plotName), height = 8, width = 14, plot)
+
 return(plot)
- 
+
+}
+
+
+plot_all_scenarios_total_proportion_biomass <- function(inputs, output_folder, scenario, 
+                                                        pre_exploitation_period, 
+                                                        startimpact, endimpact) {
+  
+  if( !dir.exists( file.path(output_folder) ) ) {
+    
+    dir.create( file.path(output_folder), recursive = TRUE )
+    
+  }
+  
+  scenario_title <- sub("_", " ", scenario)
+  
+  xmaximum <- as.numeric(max(inputs$year, na.rm = TRUE))
+  
+  yminimum <- min(inputs$lower_bound) - 
+    min(inputs$lower_bound) * 0.05
+  
+  ymaximum <- max(inputs$upper_bound) + 
+    max(inputs$upper_bound) * 0.05
+  
+  plot <- ggplot(data = inputs, aes(x = inputs$year, 
+                                    y = inputs$mean_relative_proportion_of_biomass,
+                                    colour = scenario)) +
+        geom_path() +
+        labs(x = "Time (years)", 
+             y = "Relative proportion of total biomass") +
+        geom_ribbon(aes(ymin=inputs$lower_bound, 
+                        ymax=inputs$upper_bound,
+                        fill = scenario), 
+                    colour = NA, alpha = 0.2) +
+        ylim(yminimum,ymaximum) +
+        xlim(pre_exploitation_period,xmaximum) +
+        theme(panel.grid.major = element_blank(),
+              axis.title = element_text(size = 18),
+              axis.text = element_text(size = 18),
+              panel.grid.minor = element_blank(),
+              panel.background = element_rect(fill = "grey97"),
+              axis.line = element_line(colour = "black")) +
+        geom_hline(yintercept = 1, colour = "black") +
+        geom_vline(xintercept = startimpact, colour = "red") +
+        geom_vline(xintercept = endimpact, colour = "blue") 
+  
+plot <- plot + 
+        facet_wrap( ~ scenario) 
+
+ggsave(file.path(output_folder, "All_scenarios_mean_proportion_biomass.png"), 
+       height = 8, width = 14, plot)
+
+return(plot)
+    
 }
 
 # Test function
@@ -186,7 +252,8 @@ return(plot)
 
 
 
-plot_group_proportion_biomass <- function(data, yminimum, ymaximum, startimpact, endimpact, colour_scheme){
+plot_group_proportion_biomass <- function(data, yminimum, ymaximum, startimpact, 
+                                          endimpact, colour_scheme){
   
   plot <- ggplot(data = data, aes(x = data$year, y = data$relative_proportion_of_biomass,
                  group = group)) +
