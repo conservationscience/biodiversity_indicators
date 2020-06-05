@@ -34,18 +34,18 @@
 #' want to take the mean against which change in biomass will be measured
 
 ## TO DO: Add a warning message if there is no biomass in the input data
-
-inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Test_runs\\Test_runs_ae_0_proportion_total_biomass_inputs")
-output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
-simulation_number <- "ae"
-replicate_number <- "0"
-years <- 1
-
-inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Harvesting_carnivores\\Harvesting_carnivores_201_0_proportion_total_biomass_inputs")
-output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
-simulation_number <- "201"
-replicate_number <- "0"
-years <- 10
+# 
+# inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Test_runs\\Test_runs_ae_0_proportion_total_biomass_inputs")
+# output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
+# simulation_number <- "ae"
+# replicate_number <- "0"
+# years <- 1
+# 
+# inputs <- readRDS("N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_inputs\\proportion_total_biomass\\Harvesting_carnivores\\Harvesting_carnivores_201_0_proportion_total_biomass_inputs")
+# output_folder <- "N:\\Quantitative-Ecology\\Indicators-Project\\Serengeti\\Outputs_from_indicator_code\\Indicator_outputs\\proportion_total_biomass\\Test_runs"
+# simulation_number <- "201"
+# replicate_number <- "0"
+# years <- 10
 
 calculate_proportion_biomass <- function(inputs, output_folder, simulation_number, 
                                          replicate_number,years) {
